@@ -25,10 +25,8 @@ const Navbar = () => {
         <div className=" text-lg font-semibold font-serif">Selam mart</div>
 
         <div className=" flex gap-4">
-          <div>
-            <Link href={"/new"}>
-              <Button>New Product</Button>
-            </Link>
+          <div className=" flex gap-4 justify-center items-center">
+            <Link href={"/admin"}>Admin</Link>
           </div>
           {data ? (
             <DropdownMenu>

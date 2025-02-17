@@ -74,6 +74,7 @@ model Verification {
 model Category {
   id          String   @id @default(uuid())
   name        String
+  imgUrl String
   parent_id   String?  
   parent      Category? @relation("CategoryParent", fields: [parent_id], references: [id])
   subcategories Category[] @relation("CategoryParent") 
