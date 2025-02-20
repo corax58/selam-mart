@@ -21,6 +21,7 @@ import { useState } from "react";
 import { Textarea } from "../ui/textarea";
 import { CldImage, CldUploadButton } from "next-cloudinary";
 import Image from "next/image";
+import useCreateCategories from "@/hooks/categoryHooks/useCreateCategories";
 
 function generateSlug(name: string): string {
   return name
@@ -38,9 +39,11 @@ const CategoryForm = () => {
     defaultValues: { description: "" },
   });
 
+  const createCategories = useCreateCategories();
+
   const onSubmit = (values: z.infer<typeof CategorySchema>) => {
     form.setValue("imageUrl", image);
-
+    createCategories.mutate(values);
     console.log(values);
   };
   return (

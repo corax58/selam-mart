@@ -1,5 +1,13 @@
+import { CategorySchema } from "@/schemas/categorySchema";
 import { useMutation } from "@tanstack/react-query";
+import axios from "axios";
+import { z } from "zod";
 
 export default function () {
-  return useMutation({});
+  return useMutation({
+    mutationFn: (data: z.infer<typeof CategorySchema>) =>
+      axios
+        .post(process.env.BASE_URL + "/categories", data)
+        .then((res) => res.data),
+  });
 }
