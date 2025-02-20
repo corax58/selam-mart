@@ -1,4 +1,3 @@
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -9,7 +8,7 @@ datasource db {
 }
 
 model User {
-  id               String      @id
+  id               String    @id
   name             String
   email            String
   emailVerified    Boolean
@@ -72,10 +71,23 @@ model Verification {
 }
 
 model Category {
-  id          String   @id @default(uuid())
-  name        String
-  imgUrl String
-  parent_id   String?  
-  parent      Category? @relation("CategoryParent", fields: [parent_id], references: [id])
-  subcategories Category[] @relation("CategoryParent") 
+  id            String     @id @default(cuid()) // Unique identifier
+  name          String     @unique // Category name
+  slug          String     @unique // URL-friendly identifier
+  description   String? // Optional category description
+  imageUrl      String? // Optional category image
+  parentId      String? // Self-referencing for subcategories
+  parent        Category?  @relation("CategoryToCategory", fields: [parentId], references: [id])
+  subcategories Category[] @relation("CategoryToCategory")
+  products      Product[]  @relation("ProductCategory") // Relation to products
+  createdAt     DateTime   @default(now()) // Timestamp
+  updatedAt     DateTime   @updatedAt // Auto-update on change
+}
+
+model Product {
+  id         String    @id @default(cuid())
+  name       String
+  price      Decimal
+  categoryId String?
+  category   Category? @relation("ProductCategory", fields: [categoryId], references: [id])
 }

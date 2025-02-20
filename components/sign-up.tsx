@@ -17,7 +17,7 @@ import { Loader2, X } from "lucide-react";
 import { signUp } from "@/lib/auth-client";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
-import { userSchema } from "@/app/schemas/userSchema";
+import { userSchema } from "@/schemas/userSchema";
 
 type UserData = {
   password: string;
@@ -238,7 +238,7 @@ export function SignUp() {
   );
 }
 
-async function convertImageToBase64(file: File): Promise<string> {
+export async function convertImageToBase64(file: File): Promise<string> {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
     reader.onloadend = () => resolve(reader.result as string);
