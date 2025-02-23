@@ -75,7 +75,7 @@ model Category {
   name          String     @unique // Category name
   slug          String     @unique // URL-friendly identifier
   description   String? // Optional category description
-  imageUrl      String? // Optional category image
+  imagePublicId String? // Optional category image
   parentId      String? // Self-referencing for subcategories
   parent        Category?  @relation("CategoryToCategory", fields: [parentId], references: [id])
   subcategories Category[] @relation("CategoryToCategory")

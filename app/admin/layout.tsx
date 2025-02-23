@@ -1,4 +1,5 @@
-import { AppSidebar } from "@/components/app-sidebar";
+import Navbar from "@/components/admin/Navbar";
+import { AppSidebar } from "@/components/admin/app-sidebar";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import React from "react";
 
@@ -10,8 +11,10 @@ const layout = ({
   return (
     <SidebarProvider>
       <AppSidebar />
-      <div className="flex w-full">
+      <div className=" w-full flex flex-col ">
+        <Navbar />
         <SidebarTrigger className="absolute" />
+
         {children}
       </div>
     </SidebarProvider>

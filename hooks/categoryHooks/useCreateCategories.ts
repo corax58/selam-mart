@@ -7,7 +7,7 @@ export default function () {
   return useMutation({
     mutationFn: (data: z.infer<typeof CategorySchema>) =>
       axios
-        .post(process.env.BASE_URL + "/categories", data)
+        .post(process.env.NEXT_PUBLIC_BASE_API + "/categories", data)
         .then((res) => res.data),
   });
 }

@@ -12,9 +12,10 @@ import { useState } from "react";
 
 const AddCategoryModal = () => {
   const [categoryImage, setCategoryImage] = useState("");
+  const [open, setOpen] = useState(false);
 
   return (
-    <Dialog modal={false}>
+    <Dialog modal={false} open={open} onOpenChange={setOpen}>
       <DialogTrigger>Add a category</DialogTrigger>
       <DialogContent
         onInteractOutside={(event) => event.preventDefault()}
@@ -23,7 +24,7 @@ const AddCategoryModal = () => {
         {categoryImage}
         <DialogHeader>
           <DialogTitle>New Category</DialogTitle>
-          <CategoryForm />
+          <CategoryForm setOpen={setOpen} />
         </DialogHeader>
       </DialogContent>
     </Dialog>

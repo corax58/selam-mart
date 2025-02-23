@@ -22,7 +22,7 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
 import { useSession } from "@/lib/auth-client";
-import AdminCard from "./AdminCard";
+import AdminCard from "./UserDropdown";
 
 // Menu items.
 const items = [

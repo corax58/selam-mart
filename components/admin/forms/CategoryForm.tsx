@@ -15,13 +15,16 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { convertImageToBase64 } from "../sign-up";
-import UploadWidget from "../UploadWidget";
-import { useState } from "react";
-import { Textarea } from "../ui/textarea";
+import { convertImageToBase64 } from "../../sign-up";
+import UploadWidget from "../../UploadWidget";
+import { useEffect, useState } from "react";
+import { Textarea } from "../../ui/textarea";
 import { CldImage, CldUploadButton } from "next-cloudinary";
 import Image from "next/image";
 import useCreateCategories from "@/hooks/categoryHooks/useCreateCategories";
+import Loader from "../../Loader";
+import { toast } from "sonner";
+import { Camera } from "lucide-react";
 
 function generateSlug(name: string): string {
   return name
@@ -32,8 +35,8 @@ function generateSlug(name: string): string {
     .trim();
 }
 
-const CategoryForm = () => {
-  const [image, setImage] = useState("");
+const CategoryForm = ({ setOpen }: { setOpen: (value: boolean) => void }) => {
+  const [imagePublicId, setImagePublicId] = useState("");
   const form = useForm<z.infer<typeof CategorySchema>>({
     resolver: zodResolver(CategorySchema),
     defaultValues: { description: "" },
@@ -42,23 +45,42 @@ const CategoryForm = () => {
   const createCategories = useCreateCategories();
 
   const onSubmit = (values: z.infer<typeof CategorySchema>) => {
-    form.setValue("imageUrl", image);
+    form.setValue("imagePublicId", imagePublicId);
     createCategories.mutate(values);
-    console.log(values);
   };
+
+  useEffect(() => {
+    if (createCategories.isSuccess) {
+      toast.success("Category created");
+      setOpen(false);
+    }
+    if (createCategories.isError) {
+      toast.error("Error, Something happened");
+    }
+  }, [createCategories.isSuccess, createCategories.isError]);
+
   return (
     <Form {...form}>
-      <UploadWidget setImage={setImage} />
-      {image !== "" && (
-        <CldImage
-          width="100"
-          height="100"
-          src={image}
-          sizes="100vw"
-          alt="Description of my image"
-          quality={10}
-        />
-      )}
+      <div className="flex gap-5 items-center">
+        <UploadWidget setImagePublicId={setImagePublicId} />
+        {imagePublicId !== "" ? (
+          <div className="size-[100px] bg-slate-200">
+            <CldImage
+              width="100"
+              height="100"
+              src={imagePublicId}
+              sizes="100vw"
+              alt="Description of my image"
+              className=" object-contain"
+              quality={10}
+            />
+          </div>
+        ) : (
+          <div className="size-[100px] bg-slate-200 flex justify-center items-center rounded hover:bg-slate-100">
+            <Camera size={30} strokeWidth={3} />
+          </div>
+        )}
+      </div>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
         <FormField
           control={form.control}
@@ -118,7 +140,9 @@ const CategoryForm = () => {
             </FormItem>
           )}
         />
-        <Button type="submit">Submit</Button>
+        <Button type="submit">
+          {createCategories.isPending ? <Loader /> : "Submit"}
+        </Button>
       </form>
     </Form>
   );

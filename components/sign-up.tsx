@@ -18,6 +18,7 @@ import { signUp } from "@/lib/auth-client";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { userSchema } from "@/schemas/userSchema";
+import Loader from "./Loader";
 
 type UserData = {
   password: string;
@@ -218,11 +219,7 @@ export function SignUp() {
                 });
               }}
             >
-              {loading ? (
-                <Loader2 size={16} className="animate-spin" />
-              ) : (
-                "Create an account"
-              )}
+              {loading ? <Loader /> : "Create an account"}
             </Button>
           </div>
         </CardContent>

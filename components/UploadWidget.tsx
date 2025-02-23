@@ -1,18 +1,20 @@
 "use client";
 import { CldUploadWidget } from "next-cloudinary";
 import { Button } from "./ui/button";
-import { Dispatch, SetStateAction } from "react";
-import { ChildProps } from "postcss";
 
-const UploadWidget = ({ setImage }: { setImage: (value: string) => void }) => {
+const UploadWidget = ({
+  setImagePublicId,
+}: {
+  setImagePublicId: (value: string) => void;
+}) => {
   return (
     <CldUploadWidget
       onClose={(e) => {
         // Prevent the event from bubbling up
       }}
       onSuccess={(result) => {
-        if (typeof result.info !== "string" && result.info?.url) {
-          setImage(result.info.url);
+        if (typeof result.info !== "string" && result.info) {
+          setImagePublicId(result.info.public_id);
         }
       }}
       uploadPreset="selam mart"
@@ -46,7 +48,11 @@ const UploadWidget = ({ setImage }: { setImage: (value: string) => void }) => {
       }}
     >
       {({ open }) => {
-        return <Button onClick={() => open()}>Upload an Image</Button>;
+        return (
+          <Button onClick={() => open()} className=" w-min">
+            Upload an Image
+          </Button>
+        );
       }}
     </CldUploadWidget>
   );
