@@ -23,7 +23,7 @@ const AddCategoryModal = () => {
       >
         {categoryImage}
         <DialogHeader>
-          <DialogTitle>New Category</DialogTitle>
+          <DialogTitle className=" w-max">New Category</DialogTitle>
           <CategoryForm setOpen={setOpen} />
         </DialogHeader>
       </DialogContent>

@@ -25,6 +25,7 @@ import useCreateCategories from "@/hooks/categoryHooks/useCreateCategories";
 import Loader from "../../Loader";
 import { toast } from "sonner";
 import { Camera } from "lucide-react";
+import { AxiosError } from "axios";
 
 function generateSlug(name: string): string {
   return name
@@ -55,7 +56,10 @@ const CategoryForm = ({ setOpen }: { setOpen: (value: boolean) => void }) => {
       setOpen(false);
     }
     if (createCategories.isError) {
-      toast.error("Error, Something happened");
+      const axiosError = createCategories.error as AxiosError<{
+        message: string;
+      }>;
+      toast.error(axiosError.response?.data.message);
     }
   }, [createCategories.isSuccess, createCategories.isError]);
 
@@ -81,13 +85,16 @@ const CategoryForm = ({ setOpen }: { setOpen: (value: boolean) => void }) => {
           </div>
         )}
       </div>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+      <form
+        onSubmit={form.handleSubmit(onSubmit)}
+        className="flex flex-col gap-8"
+      >
         <FormField
           control={form.control}
           name="name"
           render={({ field }) => (
-            <FormItem>
-              <FormLabel>Name</FormLabel>
+            <FormItem className="flex flex-col">
+              <FormLabel className="w-min">Name</FormLabel>
               <FormControl>
                 <Input
                   placeholder="name"
@@ -108,8 +115,8 @@ const CategoryForm = ({ setOpen }: { setOpen: (value: boolean) => void }) => {
           control={form.control}
           name="slug"
           render={({ field }) => (
-            <FormItem>
-              <FormLabel>URL Slug</FormLabel>
+            <FormItem className="flex flex-col ">
+              <FormLabel className="w-max">URL Slug</FormLabel>
               <FormControl>
                 <Input
                   placeholder="slug"
@@ -130,8 +137,8 @@ const CategoryForm = ({ setOpen }: { setOpen: (value: boolean) => void }) => {
           control={form.control}
           name="description"
           render={({ field }) => (
-            <FormItem>
-              <FormLabel>Description</FormLabel>
+            <FormItem className="flex flex-col">
+              <FormLabel className="w-min">Description</FormLabel>
               <FormControl>
                 <Textarea placeholder="Description" {...field} />
               </FormControl>
@@ -140,7 +147,7 @@ const CategoryForm = ({ setOpen }: { setOpen: (value: boolean) => void }) => {
             </FormItem>
           )}
         />
-        <Button type="submit">
+        <Button type="submit" className=" h-mx w-28">
           {createCategories.isPending ? <Loader /> : "Submit"}
         </Button>
       </form>

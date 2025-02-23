@@ -48,22 +48,22 @@ export async function POST(request: NextRequest) {
 
   try {
     const data = CategorySchema.parse(body);
-    console.log(1);
     if (!data) throw Error("Invalid data");
-    console.log(2);
 
     const updatedTags = await updateImageTags(body.imagePublicId);
     if (!updatedTags.success) throw Error("Image tag update failed");
-    console.log(3);
 
-    console.log(data);
     const existingCategory = await prisma.category.findFirst({
       where: {
         slug: data.slug,
       },
     });
 
-    if (existingCategory) throw Error("Category already exists");
+    if (existingCategory)
+      return NextResponse.json(
+        { message: "Category already exists" },
+        { status: 400 }
+      );
     const category = await prisma.category.create({
       data,
     });
