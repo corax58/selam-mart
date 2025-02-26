@@ -9,22 +9,43 @@ import {
 } from "@/components/ui/dialog";
 import CategoryForm from "./forms/CategoryForm";
 import { useState } from "react";
+import { Button } from "../ui/button";
+import { Category } from "@prisma/client";
+import { Edit } from "lucide-react";
 
-const AddCategoryModal = () => {
-  const [categoryImage, setCategoryImage] = useState("");
+const AddCategoryModal = ({
+  category,
+  parentId,
+}: {
+  category?: Category;
+  parentId?: string;
+}) => {
   const [open, setOpen] = useState(false);
 
   return (
     <Dialog modal={false} open={open} onOpenChange={setOpen}>
-      <DialogTrigger>Add a category</DialogTrigger>
+      <DialogTrigger>
+        <Button>
+          {category ? <Edit /> : parentId ? "Add sub category" : "Add category"}
+        </Button>
+      </DialogTrigger>
       <DialogContent
         onInteractOutside={(event) => event.preventDefault()}
         className="shadow-2xl "
       >
-        {categoryImage}
         <DialogHeader>
-          <DialogTitle className=" w-max">New Category</DialogTitle>
-          <CategoryForm setOpen={setOpen} />
+          <DialogTitle className=" w-max">
+            {category
+              ? "Edit Category"
+              : parentId
+              ? "New sub category"
+              : "New category"}
+          </DialogTitle>
+          <CategoryForm
+            setOpen={setOpen}
+            category={category}
+            parentId={parentId}
+          />
         </DialogHeader>
       </DialogContent>
     </Dialog>

@@ -1,81 +1,119 @@
 "use client";
 
-import { CategorySchema } from "@/schemas/categorySchema";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { convertImageToBase64 } from "../../sign-up";
-import UploadWidget from "../../UploadWidget";
-import { useEffect, useState } from "react";
-import { Textarea } from "../../ui/textarea";
-import { CldImage, CldUploadButton } from "next-cloudinary";
-import Image from "next/image";
 import useCreateCategories from "@/hooks/categoryHooks/useCreateCategories";
-import Loader from "../../Loader";
-import { toast } from "sonner";
-import { Camera } from "lucide-react";
+import { CategorySchema } from "@/schemas/categorySchema";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Category } from "@prisma/client";
 import { AxiosError } from "axios";
+import { Camera } from "lucide-react";
+import { CldImage } from "next-cloudinary";
+import { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
+import { toast } from "sonner";
+import { z } from "zod";
+import Loader from "../../Loader";
+import { Textarea } from "../../ui/textarea";
+import UploadWidget from "../../UploadWidget";
+import { useQueryClient } from "@tanstack/react-query";
+import { generateSlug, getLastPathSegment } from "@/utils/stringUtils";
+import { usePathname } from "next/navigation";
+import useEditCategory from "@/hooks/categoryHooks/useEditCategory";
 
-function generateSlug(name: string): string {
-  return name
-    .toLowerCase()
-    .replace(/\s+/g, "-") // Replace spaces with hyphens
-    .replace(/[^\w-]+/g, "") // Remove non-alphanumeric characters
-    .replace(/--+/g, "-") // Replace multiple hyphens with a single one
-    .trim();
+interface Props {
+  setOpen: (value: boolean) => void;
+  category?: Category;
+  parentId?: string;
 }
 
-const CategoryForm = ({ setOpen }: { setOpen: (value: boolean) => void }) => {
-  const [imagePublicId, setImagePublicId] = useState("");
+const CategoryForm = ({ setOpen, category, parentId }: Props) => {
+  const [imagePublicId, setImagePublicId] = useState(
+    category?.imagePublicId ? category.imagePublicId : ""
+  );
+  const pathname = usePathname();
+  const queryClient = useQueryClient();
+  const createCategories = useCreateCategories();
+  const editCategory = useEditCategory();
+
+  const defaultValues = category
+    ? {
+        name: category?.name,
+        slug: category?.slug,
+        description: category?.description || "",
+        imagePublicId: category?.imagePublicId || "",
+        parentId: category?.parentId || "",
+      }
+    : { description: "", parentId };
   const form = useForm<z.infer<typeof CategorySchema>>({
     resolver: zodResolver(CategorySchema),
-    defaultValues: { description: "" },
+    defaultValues,
   });
-
-  const createCategories = useCreateCategories();
 
   const onSubmit = (values: z.infer<typeof CategorySchema>) => {
     form.setValue("imagePublicId", imagePublicId);
-    createCategories.mutate(values);
+    console.log(values);
+    if (category) {
+      const updatedCategory = { ...category, ...values };
+      editCategory.mutate(updatedCategory);
+    } else {
+      createCategories.mutate(values);
+    }
   };
 
   useEffect(() => {
-    if (createCategories.isSuccess) {
-      toast.success("Category created");
+    if (createCategories.isSuccess || editCategory.isSuccess) {
+      const lastPath = getLastPathSegment(pathname);
+      const queryKeyItem =
+        lastPath == "categories"
+          ? "main categories"
+          : `${lastPath} subcategories`;
+
+      if (category) {
+        toast.success("Category edited successfully.");
+      } else {
+        toast.success("Category created successfully.");
+      }
+      queryClient.invalidateQueries({ queryKey: [queryKeyItem] });
       setOpen(false);
     }
-    if (createCategories.isError) {
-      const axiosError = createCategories.error as AxiosError<{
-        message: string;
-      }>;
-      toast.error(axiosError.response?.data.message);
+    if (createCategories.isError || editCategory.isError) {
+      if (category) {
+        toast.error(editCategory.error?.message);
+      } else {
+        const axiosError = createCategories.error as AxiosError<{
+          message: string;
+        }>;
+        toast.error(axiosError.response?.data.message);
+      }
     }
-  }, [createCategories.isSuccess, createCategories.isError]);
+  }, [
+    createCategories.isSuccess,
+    createCategories.isError,
+    editCategory.isSuccess,
+    editCategory.isError,
+  ]);
 
   return (
     <Form {...form}>
       <div className="flex gap-5 items-center">
         <UploadWidget setImagePublicId={setImagePublicId} />
         {imagePublicId !== "" ? (
-          <div className="size-[100px] bg-slate-200">
+          <div className="size-24 overflow-clip flex items-center rounded-md">
             <CldImage
-              width="100"
-              height="100"
+              width={500}
+              height={500}
               src={imagePublicId}
-              sizes="100vw"
-              alt="Description of my image"
-              className=" object-contain"
+              alt="category  image"
+              className="  bg-neutral-400 object-cover w-full h-full"
               quality={10}
             />
           </div>
@@ -148,7 +186,13 @@ const CategoryForm = ({ setOpen }: { setOpen: (value: boolean) => void }) => {
           )}
         />
         <Button type="submit" className=" h-mx w-28">
-          {createCategories.isPending ? <Loader /> : "Submit"}
+          {createCategories.isPending ? (
+            <Loader />
+          ) : category ? (
+            "Save"
+          ) : (
+            "Submit"
+          )}
         </Button>
       </form>
     </Form>

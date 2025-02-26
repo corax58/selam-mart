@@ -1,3 +1,4 @@
+import { api } from "@/lib/axios";
 import { CategorySchema } from "@/schemas/categorySchema";
 import { useMutation } from "@tanstack/react-query";
 import axios from "axios";
@@ -6,8 +7,6 @@ import { z } from "zod";
 export default function () {
   return useMutation({
     mutationFn: (data: z.infer<typeof CategorySchema>) =>
-      axios
-        .post(process.env.NEXT_PUBLIC_BASE_API + "/categories", data)
-        .then((res) => res.data),
+      api.post("/categories", data).then((res) => res.data),
   });
 }

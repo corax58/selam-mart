@@ -8,6 +8,7 @@ import { v2 as cloudinary } from "cloudinary";
 const cloud_name = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
 const api_key = process.env.NEXT_PUBLIC_CLOUDINARY_API_KEY;
 const api_secret = process.env.NEXT_PUBLIC_CLOUDINARY_API_SECRET;
+
 cloudinary.config({
   cloud_name,
   api_key,
@@ -16,27 +17,7 @@ cloudinary.config({
 
 const updateImageTags = async (imageId: string) => {
   try {
-    console.log(imageId);
-    const response = await cloudinary.uploader.replace_tag(
-      "confirmed-category",
-      [imageId]
-    );
-
-    console.log(response);
-    // const response = await axios.post(
-    //   `https://api.cloudinary.com/v1_1/${cloudName}/resources/image/tags`,
-    //   {
-    //     public_ids: [imageId], // Image ID to update
-    //     tags: "confirmed-category", // New tag
-    //   },
-    //   {
-    //     auth: {
-    //       username: apiKey as string,
-    //       password: apiSecret as string,
-    //     },
-    //   }
-    // );
-
+    await cloudinary.uploader.replace_tag("confirmed-category", [imageId]);
     return { success: true };
   } catch (error) {
     return { success: false };
@@ -50,6 +31,7 @@ export async function POST(request: NextRequest) {
     const data = CategorySchema.parse(body);
     if (!data) throw Error("Invalid data");
 
+    console.log(data);
     const updatedTags = await updateImageTags(body.imagePublicId);
     if (!updatedTags.success) throw Error("Image tag update failed");
 
@@ -72,5 +54,19 @@ export async function POST(request: NextRequest) {
   } catch (Error) {
     console.log(Error);
     return NextResponse.json({ Error }, { status: 404 });
+  }
+}
+
+export async function GET() {
+  try {
+    const categories = await prisma.category.findMany({
+      where: {
+        parentId: null,
+      },
+    });
+    return NextResponse.json(categories, { status: 200 });
+  } catch (error) {
+    console.log(error);
+    return NextResponse.json(error, { status: 404 });
   }
 }

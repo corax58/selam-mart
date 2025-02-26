@@ -77,7 +77,7 @@ model Category {
   description   String? // Optional category description
   imagePublicId String? // Optional category image
   parentId      String? // Self-referencing for subcategories
-  parent        Category?  @relation("CategoryToCategory", fields: [parentId], references: [id])
+  parent        Category?  @relation("CategoryToCategory", fields: [parentId], references: [id], onDelete: Cascade) 
   subcategories Category[] @relation("CategoryToCategory")
   products      Product[]  @relation("ProductCategory") // Relation to products
   createdAt     DateTime   @default(now()) // Timestamp

@@ -1,23 +1,25 @@
 "use client";
 
-import AddCategoryDrawer from "@/components/admin/AddCategoryModal";
 import AddCategoryModal from "@/components/admin/AddCategoryModal";
-import UploadWidget from "@/components/UploadWidget";
-import { CldUploadButton } from "next-cloudinary";
-import Link from "next/link";
-
-import React, { useState } from "react";
+import CategoriesTable from "@/components/admin/tables/CategoriesTable";
+import Loader from "@/components/Loader";
+import { useFetchCategories } from "@/hooks/categoryHooks/useFetchCategories";
 
 const CategoriesPage = () => {
-  const [visible, setVisible] = useState(false);
+  const { data: categories, isLoading, error } = useFetchCategories();
 
-  return (
-    <div className="w-full">
-      <div className=" ">
-        <AddCategoryModal />
+  if (isLoading) <Loader />;
+  if (error) <p className="text-red-500">Something happened</p>;
+  if (categories)
+    return (
+      <div className="w-full">
+        <div className=" flex justify-between p-4  border-b items-center h-20">
+          <p className=" text-lg font-bold">Main categories</p>
+          <AddCategoryModal />
+        </div>
+        <CategoriesTable data={categories} />
       </div>
-    </div>
-  );
+    );
 };
 
 export default CategoriesPage;
