@@ -77,17 +77,36 @@ model Category {
   description   String? // Optional category description
   imagePublicId String? // Optional category image
   parentId      String? // Self-referencing for subcategories
-  parent        Category?  @relation("CategoryToCategory", fields: [parentId], references: [id], onDelete: Cascade) 
+  parent        Category?  @relation("CategoryToCategory", fields: [parentId], references: [id], onDelete: Cascade)
   subcategories Category[] @relation("CategoryToCategory")
-  products      Product[]  @relation("ProductCategory") // Relation to products
+  products      Product[]
   createdAt     DateTime   @default(now()) // Timestamp
   updatedAt     DateTime   @updatedAt // Auto-update on change
 }
 
 model Product {
-  id         String    @id @default(cuid())
-  name       String
-  price      Decimal
-  categoryId String?
-  category   Category? @relation("ProductCategory", fields: [categoryId], references: [id])
+  id          String   @id @default(uuid())
+  name        String   @unique
+  description String
+  details     String
+  price       Decimal
+  stock       Int      @default(0)
+  categoryId  String
+  images      Json // Store multiple image URLs
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  category Category @relation(fields: [categoryId], references: [id])
+  reviews  Review[]
+}
+
+model Review {
+  id        String   @id @default(uuid())
+  productId String
+  rating    Int
+  comment   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  product Product @relation(fields: [productId], references: [id])
 }
