@@ -16,11 +16,16 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import EditorToolbar from "../EditorToolbar";
+import { EditorContent } from "@tiptap/react";
+import useCustomEditor from "@/hooks/useCustomEditor";
 
 const ProductForm = () => {
   const form = useForm<z.infer<typeof productSchema>>({
     resolver: zodResolver(productSchema),
   });
+
+  const editor = useCustomEditor();
 
   const onSubmit = (values: z.infer<typeof productSchema>) => {
     console.log(values);
@@ -28,7 +33,10 @@ const ProductForm = () => {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+      <form
+        onSubmit={form.handleSubmit(onSubmit)}
+        className="space-y-8  w-1/2 p-3"
+      >
         <FormField
           control={form.control}
           name="name"
@@ -81,6 +89,26 @@ const ProductForm = () => {
                 <Input step={"1"} type="number" {...field} />
               </FormControl>
 
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="details"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Details</FormLabel>
+              <FormControl>
+                <div className=" border rounded-2xl px-2">
+                  <EditorToolbar editor={editor} />
+                  <EditorContent
+                    editor={editor}
+                    className=" w-full "
+                    {...field}
+                  />
+                </div>
+              </FormControl>
               <FormMessage />
             </FormItem>
           )}

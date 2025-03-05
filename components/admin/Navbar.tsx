@@ -18,7 +18,7 @@ const AdminNavbar = () => {
   const pageTitle = formatAdminPath(pathname);
 
   return (
-    <div className=" flex justify-between w-full container px-10 py-3 bg-slate-50 items-center">
+    <div className=" flex justify-between w-full  px-10 py-3 bg-slate-50 items-center">
       <div className=" font-bold text-xl">{pageTitle}</div>
       <div className=" flex gap-5">
         <Notifications />

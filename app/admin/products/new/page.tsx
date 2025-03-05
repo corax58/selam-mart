@@ -1,8 +1,9 @@
 import ProductForm from "@/components/admin/forms/ProductForm";
-import Tiptap from "@/components/admin/TipTap";
+import ProductImageUploader from "@/components/admin/ProductImageUploader";
 const NewProductPage = () => {
   return (
-    <div>
+    <div className=" flex ">
+      <ProductImageUploader />
       <ProductForm />
     </div>
   );
