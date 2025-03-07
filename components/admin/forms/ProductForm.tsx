@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -19,11 +19,14 @@ import { Textarea } from "@/components/ui/textarea";
 import EditorToolbar from "../EditorToolbar";
 import { EditorContent } from "@tiptap/react";
 import useCustomEditor from "@/hooks/useCustomEditor";
+import ProductImageUploader from "../ProductImageUploader";
 
 const ProductForm = () => {
   const form = useForm<z.infer<typeof productSchema>>({
     resolver: zodResolver(productSchema),
   });
+
+  const [productImages, setProductImages] = useState<string[]>([]);
 
   const editor = useCustomEditor();
 
@@ -33,9 +36,15 @@ const ProductForm = () => {
 
   return (
     <Form {...form}>
+      <div className=" w-1/2">
+        <ProductImageUploader
+          productImages={productImages}
+          setProductImages={setProductImages}
+        />
+      </div>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
-        className="space-y-8  w-1/2 p-3"
+        className=" w-1/2 flex flex-col gap-8 "
       >
         <FormField
           control={form.control}

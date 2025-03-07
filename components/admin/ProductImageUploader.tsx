@@ -1,10 +1,23 @@
 import React from "react";
+import ImageSlider from "./ImageSlider";
+import ProductImageUploadWidget from "../ProductImageUploadWidget";
 
-const ProductImageUploader = () => {
+export interface ProductImageState {
+  setProductImages: (value: string[]) => void;
+  productImages: string[];
+}
+
+const ProductImageUploader = ({
+  setProductImages,
+  productImages,
+}: ProductImageState) => {
   return (
     <div className=" ">
-      <div></div>
-      <div></div>
+      <ProductImageUploadWidget
+        setProductImages={setProductImages}
+        productImages={productImages}
+      />
+      <ImageSlider productImages={productImages} />
     </div>
   );
 };

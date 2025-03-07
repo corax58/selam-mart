@@ -3,7 +3,6 @@ import ProductImageUploader from "@/components/admin/ProductImageUploader";
 const NewProductPage = () => {
   return (
     <div className=" flex ">
-      <ProductImageUploader />
       <ProductForm />
     </div>
   );

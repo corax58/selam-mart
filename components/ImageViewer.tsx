@@ -1,4 +1,5 @@
 "use client";
+import { CldImage } from "next-cloudinary";
 import { MouseEvent, useState } from "react";
 
 const ImageViewer = ({ imageUrl }: { imageUrl: string }) => {
@@ -17,20 +18,18 @@ const ImageViewer = ({ imageUrl }: { imageUrl: string }) => {
     setCursorPosition({ x: event.pageX - left, y: event.pageY - top });
   };
 
-  const Image = "https://picsum.photos/id/237/500/800";
-
   return (
-    <div className="relative">
+    <div className=" size-[500px] bg-red-500 overflow-visible">
       <div
-        className="img-magnifier-container relative w-max"
+        className="img-magnifier-container relative w-full h-full"
         onMouseEnter={() => setShowMagnifier(true)}
         onMouseLeave={() => setShowMagnifier(false)}
         onMouseMove={handleMouseHover}
       >
-        <img
-          src={Image}
+        <CldImage
+          src={imageUrl}
           alt="Magnifiable"
-          className="magnifier-img w-auto h-[80vh]"
+          className="magnifier-img w-auto h-full object-cover"
         />
 
         {showMagnifier && (
@@ -43,10 +42,10 @@ const ImageViewer = ({ imageUrl }: { imageUrl: string }) => {
             }}
           >
             <div
-              className="magnifier-image size-64 border-2 rounded-full border-white"
+              className="magnifier-image size-48 border-2  border-white"
               style={{
-                backgroundImage: `url(${Image})`,
-                backgroundSize: "300%", // Zoom level
+                backgroundImage: `url(${imageUrl})`,
+                backgroundSize: "400%", // Zoom level
                 backgroundPosition: `${position.x}% ${position.y}%`,
               }}
             ></div>
