@@ -63,6 +63,25 @@ export async function GET() {
       where: {
         parentId: null,
       },
+      include: {
+        subcategories: {
+          include: {
+            subcategories: {
+              include: {
+                subcategories: {
+                  include: {
+                    subcategories: {
+                      include: {
+                        subcategories: true,
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
     });
     return NextResponse.json(categories, { status: 200 });
   } catch (error) {

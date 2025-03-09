@@ -1,9 +1,9 @@
-import React from "react";
-import ImageSlider from "./ImageSlider";
+import React, { Dispatch, SetStateAction } from "react";
 import ProductImageUploadWidget from "../ProductImageUploadWidget";
+import ImageSlider from "../ImageSlider";
 
 export interface ProductImageState {
-  setProductImages: (value: string[]) => void;
+  setProductImages: Dispatch<SetStateAction<string[]>>;
   productImages: string[];
 }
 
@@ -12,7 +12,7 @@ const ProductImageUploader = ({
   productImages,
 }: ProductImageState) => {
   return (
-    <div className=" ">
+    <div className="flex flex-col gap-5 items-end ">
       <ProductImageUploadWidget
         setProductImages={setProductImages}
         productImages={productImages}

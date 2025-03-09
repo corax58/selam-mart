@@ -8,24 +8,37 @@ import {
 } from "@/components/ui/select";
 import { Category } from "@prisma/client";
 import { nestedCategory } from "@/app/types/utils";
+import { useFetchCategories } from "@/hooks/categoryHooks/useFetchCategories";
+import Loader from "./Loader";
 
 interface Props {
   categories: nestedCategory[];
   setCategory: (value: string) => void;
+  setCategoryError: (value: boolean) => void;
 }
-const CategorySelector = ({ categories, setCategory }: Props) => {
-  const [selectedCategorySlug, setSelectedCategorySlug] = useState<string>();
+const CategorySelector = ({
+  categories,
+  setCategory,
+  setCategoryError,
+}: Props) => {
+  const [selectedCategoryId, setSelectedCategoryId] = useState<string>();
 
   return (
-    <div className=" flex flex-col gap-5 ">
+    <div className=" flex flex-col gap-5  mt-2">
       <Select
         onValueChange={(value) => {
+          setCategoryError(false);
+          setCategory("");
           if (
-            categories.find((category) => category.slug == value)?.subcategories
+            categories.find((category) => category.id == value)?.subcategories
+              .length == 0
           ) {
-            setSelectedCategorySlug(value);
-          } else {
+            console.log("main category");
+            setSelectedCategoryId(value);
             setCategory(value);
+          } else {
+            console.log("sub category");
+            setSelectedCategoryId(value);
           }
         }}
       >
@@ -34,21 +47,21 @@ const CategorySelector = ({ categories, setCategory }: Props) => {
         </SelectTrigger>
         <SelectContent>
           {categories.map((category, index) => (
-            <SelectItem value={category.slug} key={index}>
+            <SelectItem value={category.id} key={index}>
               {category.name}
             </SelectItem>
           ))}
         </SelectContent>
       </Select>
-      {selectedCategorySlug &&
-        categories.find((category) => category.slug == selectedCategorySlug)
-          ?.subcategories && (
+      {selectedCategoryId &&
+        categories.find((category) => category.id == selectedCategoryId)
+          ?.subcategories.length != 0 && (
           <CategorySelector
             setCategory={setCategory}
+            setCategoryError={setCategoryError}
             categories={
-              categories.find(
-                (category) => category.slug == selectedCategorySlug
-              )?.subcategories!
+              categories.find((category) => category.id == selectedCategoryId)
+                ?.subcategories!
             }
           />
         )}

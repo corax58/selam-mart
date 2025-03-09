@@ -1,5 +1,6 @@
 "use client";
 import { CldImage } from "next-cloudinary";
+import Image from "next/image";
 import { MouseEvent, useState } from "react";
 
 const ImageViewer = ({ imageUrl }: { imageUrl: string }) => {
@@ -19,7 +20,7 @@ const ImageViewer = ({ imageUrl }: { imageUrl: string }) => {
   };
 
   return (
-    <div className=" size-[500px] bg-red-500 overflow-visible">
+    <div className=" h-[500px] w-full ">
       <div
         className="img-magnifier-container relative w-full h-full"
         onMouseEnter={() => setShowMagnifier(true)}
@@ -29,7 +30,8 @@ const ImageViewer = ({ imageUrl }: { imageUrl: string }) => {
         <CldImage
           src={imageUrl}
           alt="Magnifiable"
-          className="magnifier-img w-auto h-full object-cover"
+          fill
+          className="magnifier-img w-full h-auto object-cover"
         />
 
         {showMagnifier && (
@@ -45,7 +47,7 @@ const ImageViewer = ({ imageUrl }: { imageUrl: string }) => {
               className="magnifier-image size-48 border-2  border-white"
               style={{
                 backgroundImage: `url(${imageUrl})`,
-                backgroundSize: "400%", // Zoom level
+                backgroundSize: "500%", // Zoom level
                 backgroundPosition: `${position.x}% ${position.y}%`,
               }}
             ></div>

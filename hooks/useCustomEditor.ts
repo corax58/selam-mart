@@ -36,7 +36,6 @@ const useCustomEditor = () => {
     extensions: [
       StarterKit.configure({}),
       CustomHeading,
-
       BulletList.configure({
         HTMLAttributes: {
           class: "list-disc pl-5",

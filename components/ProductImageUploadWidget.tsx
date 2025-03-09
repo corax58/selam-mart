@@ -13,8 +13,9 @@ const ProductImageUploadWidget = ({
         // Prevent the event from bubbling up
       }}
       onSuccess={(result) => {
-        if (typeof result.info !== "string" && result.info) {
-          setProductImages([...productImages, result.info.public_id]);
+        if (typeof result.info !== "string" && result.info?.url) {
+          const imageUrl = result.info?.url;
+          setProductImages((prevImages) => [...prevImages, imageUrl]);
         }
       }}
       uploadPreset="selam mart"

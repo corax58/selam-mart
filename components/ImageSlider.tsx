@@ -2,10 +2,11 @@
 import "react-responsive-carousel/lib/styles/carousel.min.css"; // requires a loader
 
 import { Carousel } from "react-responsive-carousel";
-import ImageViewer from "../ImageViewer";
-import { Camera, FileImage, Image } from "lucide-react";
-import { ProductImageState } from "./ProductImageUploader";
+import ImageViewer from "./ImageViewer";
+import { Camera, FileImage } from "lucide-react";
+import { ProductImageState } from "./admin/ProductImageUploader";
 import { CldImage } from "next-cloudinary";
+import Image from "next/image";
 
 interface Props {
   productImages: string[];
@@ -13,7 +14,7 @@ interface Props {
 const ImageSlider = ({ productImages }: Props) => {
   if (productImages.length == 0)
     return (
-      <div className="w-[500px] h-[600px]  flex flex-col gap-4 p-5  ">
+      <div className="h-[500px] w-full  flex flex-col gap-4   ">
         <div className=" h-5/6 border-4 border-dashed  rounded-md text-neutral-600 border-neutral-600  aspect-square  gap-2 flex flex-col justify-center items-center">
           <FileImage size={100} strokeWidth={0.5} className=" " />
           <p className=" text-lg">Upload an Image</p>
@@ -28,7 +29,7 @@ const ImageSlider = ({ productImages }: Props) => {
 
   return (
     <Carousel
-      className=" size-[500px]  "
+      className=" h-[500px] w-full   "
       infiniteLoop
       renderThumbs={() =>
         productImages.map((image, index) => (
