@@ -11,20 +11,36 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
-import useDeleteCategories from "@/hooks/categoryHooks/useDeleteCategories";
 import { Trash } from "lucide-react";
 import { toast } from "sonner";
-
-import React, { useEffect } from "react";
+import { deleteCategory } from "@/app/actions/categories";
 import Loader from "@/components/Loader";
+import { useQueryClient } from "@tanstack/react-query";
+import { useTransition } from "react";
 
-const DeleteCategory = ({ id, slug }: { id: string; slug?: string }) => {
-  const { mutate, isPending, isError, isSuccess } = useDeleteCategories(slug);
+const DeleteCategory = ({ id }: { id: string }) => {
+  const queryClient = useQueryClient();
+  const [isPending, startTransition] = useTransition();
 
-  useEffect(() => {
-    if (isSuccess) toast.success("Category deleted.");
-    if (isError) toast.error("Category deletion failed.");
-  }, [isSuccess, isError]);
+  const handleDelete = () => {
+    startTransition(async () => {
+      try {
+        const result = await deleteCategory(id);
+        if (result.error) {
+          toast.error("Category deletion failed.");
+        } else if (result.message) {
+          toast.success("Category deleted.");
+          queryClient.invalidateQueries();
+        }
+      } catch (error) {
+        const message =
+          error instanceof Error
+            ? error.message
+            : "An unexpected error occurred.";
+        toast.error(message);
+      }
+    });
+  };
   return (
     <AlertDialog>
       <AlertDialogTrigger>
@@ -36,15 +52,13 @@ const DeleteCategory = ({ id, slug }: { id: string; slug?: string }) => {
         <AlertDialogHeader>
           <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
           <AlertDialogDescription>
-            This action cannot be undone. This will permanently this category
-            and remove its subcategories.
+            This will permanently delete this category and remove its
+            subcategories.
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel>Cancel</AlertDialogCancel>
-          <AlertDialogAction onClick={() => mutate(id)}>
-            Continue
-          </AlertDialogAction>
+          <AlertDialogAction onClick={handleDelete}>Continue</AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>

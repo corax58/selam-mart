@@ -17,17 +17,18 @@ import { Category } from "@prisma/client";
 import { AxiosError } from "axios";
 import { Camera } from "lucide-react";
 import { CldImage } from "next-cloudinary";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useTransition } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
 import Loader from "../../Loader";
 import { Textarea } from "../../ui/textarea";
-import UploadWidget from "../../UploadWidget";
+import CategoryImageUploadWidget from "../../CategoryImageUploadWidget";
 import { useQueryClient } from "@tanstack/react-query";
 import { generateSlug, getLastPathSegment } from "@/utils/stringUtils";
 import { usePathname } from "next/navigation";
 import useEditCategory from "@/hooks/categoryHooks/useEditCategory";
+import { editCategory } from "@/app/actions/categories";
 
 interface Props {
   setOpen: (value: boolean) => void;
@@ -42,7 +43,8 @@ const CategoryForm = ({ setOpen, category, parentId }: Props) => {
   const pathname = usePathname();
   const queryClient = useQueryClient();
   const createCategories = useCreateCategories();
-  const editCategory = useEditCategory();
+
+  const [isPending, startTransition] = useTransition();
 
   const defaultValues = category
     ? {
@@ -59,53 +61,58 @@ const CategoryForm = ({ setOpen, category, parentId }: Props) => {
   });
 
   const onSubmit = (values: z.infer<typeof CategorySchema>) => {
-    form.setValue("imagePublicId", imagePublicId);
-    console.log(values);
+    const data = { ...values, imagePublicId };
+    console.log(imagePublicId);
     if (category) {
       const updatedCategory = { ...category, ...values };
-      editCategory.mutate(updatedCategory);
+
+      try {
+        startTransition(async () => {
+          const result = await editCategory(updatedCategory);
+          if (result.error) {
+            toast.error(result.error);
+          } else if (result.message) {
+            toast.success(result.message);
+            setOpen(false);
+            queryClient.invalidateQueries();
+          }
+        });
+      } catch (error) {
+        console.error(error);
+        toast.error("Unexpected error occured.");
+      }
     } else {
-      createCategories.mutate(values);
+      createCategories.mutate(data);
     }
   };
 
   useEffect(() => {
-    if (createCategories.isSuccess || editCategory.isSuccess) {
-      const lastPath = getLastPathSegment(pathname);
-      const queryKeyItem =
-        lastPath == "categories"
-          ? "main categories"
-          : `${lastPath} subcategories`;
+    if (createCategories.isSuccess) {
+      toast.success("Category created successfully.");
 
-      if (category) {
-        toast.success("Category edited successfully.");
-      } else {
-        toast.success("Category created successfully.");
-      }
-      queryClient.invalidateQueries({ queryKey: [queryKeyItem] });
+      queryClient.invalidateQueries();
       setOpen(false);
     }
-    if (createCategories.isError || editCategory.isError) {
-      if (category) {
-        toast.error(editCategory.error?.message);
-      } else {
-        const axiosError = createCategories.error as AxiosError<{
-          message: string;
-        }>;
-        toast.error(axiosError.response?.data.message);
-      }
+
+    if (createCategories.isError) {
+      const axiosError = createCategories.error as AxiosError<{
+        message: string;
+      }>;
+      const errorMessage =
+        axiosError.response?.data?.message || "Something went wrong";
+      toast.error(errorMessage);
     }
   }, [
     createCategories.isSuccess,
     createCategories.isError,
-    editCategory.isSuccess,
-    editCategory.isError,
+    queryClient,
+    setOpen,
   ]);
 
   return (
     <Form {...form}>
       <div className="flex gap-5 items-center">
-        <UploadWidget setImagePublicId={setImagePublicId} />
+        <CategoryImageUploadWidget setImagePublicId={setImagePublicId} />
         {imagePublicId !== "" ? (
           <div className="size-24 overflow-clip flex items-center rounded-md">
             <CldImage
@@ -185,8 +192,12 @@ const CategoryForm = ({ setOpen, category, parentId }: Props) => {
             </FormItem>
           )}
         />
-        <Button type="submit" className=" h-mx w-28">
-          {createCategories.isPending ? (
+        <Button
+          type="submit"
+          className=" h-mx w-28"
+          disabled={createCategories.isPending || isPending}
+        >
+          {createCategories.isPending || isPending ? (
             <Loader />
           ) : category ? (
             "Save"

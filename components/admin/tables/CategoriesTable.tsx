@@ -6,8 +6,8 @@ import { CldImage } from "next-cloudinary";
 import Loader from "../../Loader";
 import AddCategoryModal from "../AddCategoryModal";
 import { DataTable } from "../data-table";
-import DeleteCategory from "./DeleteCategory";
-import Descriptiontooltip from "./Descriptiontooltip";
+import DeleteCategory from "../DeleteCategory";
+import Descriptiontooltip from "../Descriptiontooltip";
 import { usePathname } from "next/navigation";
 import { useMemo } from "react";
 import Link from "next/link";
@@ -73,7 +73,7 @@ const CategoriesTable = ({ data }: { data: Category[] }) => {
           return (
             <div className="  flex gap-2">
               <AddCategoryModal category={row.original} />
-              <DeleteCategory id={row.original.id} slug={slug} />
+              <DeleteCategory id={row.original.id} />
             </div>
           );
         },

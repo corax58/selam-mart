@@ -22,3 +22,22 @@ export async function createProduct(product: z.infer<typeof productSchema>) {
     };
   }
 }
+
+export async function deleteProduct(id: string) {
+  try {
+    const product = await prisma.product.findUnique({
+      where: { id },
+    });
+    if (!product) throw new Error("crap");
+    await prisma.product.delete({
+      where: {
+        id: product.id,
+      },
+    });
+    return { message: "Product deleted successfully" };
+  } catch (error) {
+    return {
+      error: error instanceof Error ? error.message : "Something went wrong.",
+    };
+  }
+}

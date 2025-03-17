@@ -71,37 +71,37 @@ model Verification {
 }
 
 model Category {
-  id            String     @id @default(cuid()) // Unique identifier
-  name          String     @unique // Category name
-  slug          String     @unique // URL-friendly identifier
-  description   String? // Optional category description
-  imagePublicId String? // Optional category image
-  parentId      String? // Self-referencing for subcategories
+  id            String     @id @default(cuid()) 
+  name          String     @unique 
+  slug          String     @unique 
+  description   String?
+  imagePublicId String? 
+  parentId      String? 
   parent        Category?  @relation("CategoryToCategory", fields: [parentId], references: [id], onDelete: Cascade)
   subcategories Category[] @relation("CategoryToCategory")
   products      Product[]
-  createdAt     DateTime   @default(now()) // Timestamp
-  updatedAt     DateTime   @updatedAt // Auto-update on change
+  createdAt     DateTime   @default(now()) 
+  updatedAt     DateTime   @updatedAt 
 }
 
 model Product {
-  id          String   @id @default(uuid())
+  id          String   @id @default(cuid())
   name        String   @unique
   description String
   details     String
   price       Decimal
   stock       Int      @default(0)
-  categoryId  String
-  images      String[] // Store multiple image URLs
+  categoryId  String?   
+  images      String[] 
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
-  category Category @relation(fields: [categoryId], references: [id])
+  category Category? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
   reviews  Review[]
 }
 
 model Review {
-  id        String   @id @default(uuid())
+  id        String   @id @default(cuid())
   productId String
   rating    Int
   comment   String

@@ -6,6 +6,7 @@ import { ProductImageState } from "./admin/ProductImageUploader";
 const ProductImageUploadWidget = ({
   setProductImages,
   productImages,
+  setProductImageError,
 }: ProductImageState) => {
   return (
     <CldUploadWidget
@@ -13,6 +14,7 @@ const ProductImageUploadWidget = ({
         // Prevent the event from bubbling up
       }}
       onSuccess={(result) => {
+        setProductImageError(false);
         if (typeof result.info !== "string" && result.info?.url) {
           const imageUrl = result.info?.url;
           setProductImages((prevImages) => [...prevImages, imageUrl]);

@@ -2,16 +2,13 @@
 import { CldUploadWidget } from "next-cloudinary";
 import { Button } from "./ui/button";
 
-const UploadWidget = ({
+const CategoryImageUploadWidget = ({
   setImagePublicId,
 }: {
   setImagePublicId: (value: string) => void;
 }) => {
   return (
     <CldUploadWidget
-      onClose={(e) => {
-        // Prevent the event from bubbling up
-      }}
       onSuccess={(result) => {
         if (typeof result.info !== "string" && result.info) {
           setImagePublicId(result.info.public_id);
@@ -58,4 +55,4 @@ const UploadWidget = ({
   );
 };
 
-export default UploadWidget;
+export default CategoryImageUploadWidget;

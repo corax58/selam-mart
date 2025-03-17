@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { nestedCategory } from "@/app/types/utils";
 import {
   Select,
   SelectContent,
@@ -6,10 +6,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Category } from "@prisma/client";
-import { nestedCategory } from "@/app/types/utils";
-import { useFetchCategories } from "@/hooks/categoryHooks/useFetchCategories";
-import Loader from "./Loader";
+import { useState } from "react";
 
 interface Props {
   categories: nestedCategory[];

@@ -23,7 +23,7 @@ const Subcategories = ({ params }: { params: Promise<{ slug: string }> }) => {
         <div className=" flex justify-between p-4  border-b items-center h-20">
           <div className=" flex items-center gap-2 h-full w-full">
             {parent.imagePublicId && (
-              <div className="h-full w-full overflow-clip flex items-center rounded-md">
+              <div className="size-16 overflow-clip flex items-center rounded-md">
                 <CldImage
                   width={500}
                   height={500}

@@ -28,7 +28,7 @@ export async function editCategory(category: Category) {
       where: { id: category.id },
     });
 
-    if (!existingCategory) throw Error("Category not found");
+    if (!existingCategory) return { error: "Category was not found." };
 
     const { name, slug, imagePublicId, description } = category;
 
@@ -45,10 +45,8 @@ export async function editCategory(category: Category) {
     return { message: "Category edited successfully. " };
   } catch (error: unknown) {
     console.error("Error editing category:", error);
-    if (error instanceof Error) {
-      return { message: "Failed to delete category", error: error.message };
-    } else {
-      return { message: "Unknown error occured." };
-    }
+    return {
+      error: error instanceof Error ? error.message : "Failed to edit category",
+    };
   }
 }

@@ -37,7 +37,7 @@ export async function GET(request: NextRequest) {
       ...product,
       price: product.price.toNumber() ?? 0,
     }));
-    return NextResponse.json({ products: serializedProducts }, { status: 200 });
+    return NextResponse.json(serializedProducts, { status: 200 });
   } catch (error) {
     console.error("Error fetching products:", error);
     return NextResponse.json(
