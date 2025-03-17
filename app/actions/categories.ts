@@ -4,13 +4,22 @@ import { prisma } from "@/lib/prisma";
 import { Category } from "@prisma/client";
 
 export async function deleteCategory(id: string) {
-  const category = await prisma.category.findUnique({ where: { id } });
-
-  if (!category) return { message: "No category by that id" };
-
-  await prisma.category.delete({ where: { id } });
-
-  return { message: "Category deleted" };
+  try {
+    const category = await prisma.category.findUnique({
+      where: { id },
+    });
+    if (!category) throw new Error("crap");
+    await prisma.category.delete({
+      where: {
+        id: category.id,
+      },
+    });
+    return { message: "Category deleted successfully" };
+  } catch (error) {
+    return {
+      error: error instanceof Error ? error.message : "Something went wrong.",
+    };
+  }
 }
 
 export async function editCategory(category: Category) {
